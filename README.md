@@ -29,7 +29,44 @@ app/
 ├── Services/ # Casos de uso
 └── Traits/ # - ApiResponseTrait
 
-text
+## ✨ Principios de Diseño Aplicados
+
+### 🧱 SOLID
+
+| Principio | Aplicación en el proyecto |
+|-----------|--------------------------|
+| **S**ingle Responsibility | Cada clase tiene una única responsabilidad: Controladores (HTTP), Repositorios (persistencia), Servicios (lógica de negocio), DTOs (transferencia de datos) |
+| **O**pen/Closed | Las interfaces (`UserRepositoryInterface`, `GiphyServiceInterface`) permiten extender funcionalidad sin modificar el código existente |
+| **L**iskov Substitution | Las implementaciones concretas (`EloquentUserRepository`) pueden sustituir a sus interfaces sin alterar el comportamiento |
+| **I**nterface Segregation | Interfaces específicas y pequeñas (`UserRepositoryInterface`, `FavoriteRepositoryInterface`) en lugar de una interfaz general |
+| **D**ependency Inversion | Dependemos de abstracciones en los controladores, no de implementaciones concretas (inyección de dependencias) |
+
+### 🔁 DRY (Don't Repeat Yourself)
+
+| Práctica | Implementación |
+|----------|----------------|
+| **Servicio centralizado** | `GiphyService` encapsula toda la comunicación con la API externa, reutilizado por múltiples controladores |
+| **Trait de respuestas** | `ApiResponseTrait` unifica el formato de todas las respuestas JSON |
+| **DTOs reutilizables** | `LoginRequestDTO`, `SearchGifRequestDTO` evitan duplicar lógica de transferencia de datos |
+| **Repositorios** | La lógica de acceso a datos está encapsulada en repositorios, no repetida en controladores |
+
+### 💬 Tell Don't Ask
+
+| Antes (❌ Mal) | Después (✅ Bien) |
+|----------------|-------------------|
+| Preguntar al repositorio cómo verificar y luego decidir | Decirle al repositorio que verifique (`$repository->exists()`) |
+| Consultar el estado de un objeto y tomar decisiones externas | El objeto encapsula su comportamiento y toma decisiones internas |
+
+**Ejemplo concreto:**
+```php
+// ❌ Preguntamos (Ask)
+$existing = Favorite::where('user_id', $userId)->where('gif_id', $gifId)->first();
+if ($existing) { /* decidir */ }
+
+// ✅ Decimos (Tell)
+if ($this->favoriteRepository->exists($userId, $gifId)) {
+    return $this->errorResponse('Ya existe');
+}
 
 ## 🔧 Instalación
 
@@ -41,7 +78,7 @@ text
 
 ### 🚀 Instalación local (XAMPP)
 
-```bash
+bash
 # 1. Clonar el repositorio
 git clone https://github.com/tu-usuario/giphy-challenge.git
 cd giphy-challenge
