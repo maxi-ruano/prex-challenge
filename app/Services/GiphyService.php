@@ -2,78 +2,62 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
 use App\Contracts\Services\GiphyServiceInterface;
+use App\Exceptions\GiphyApiException;
+use Illuminate\Support\Facades\Log;
 
-class GiphyService implements GiphyServiceInterface
+class GiphyService
 {
-    protected string $apiKey;
-    protected string $baseUrl;
-
-    public function __construct()
-    {
-        $this->apiKey = config('services.giphy.api_key');
-        $this->baseUrl = config('services.giphy.base_url');
-    }
+    public function __construct(
+        private GiphyServiceInterface $giphyAdapter
+    ) {}
 
     public function search(string $query, int $limit = 25, int $offset = 0): array
     {
-        $response = Http::get("{$this->baseUrl}/gifs/search", [
-            'api_key' => $this->apiKey,
-            'q' => $query,
-            'limit' => $limit,
-            'offset' => $offset,
-            'rating' => 'g',
-            'lang' => 'es'
-        ]);
+        try {
 
-        if (!$response->successful()) {
+            $results = $this->giphyAdapter->search($query, $limit, $offset);
+
+            if (empty($results['data'])) {
             return [];
+        }                
+            return $results;
+            
+        } catch (GiphyApiException $e) {
+            Log::error('Error service  GIPHY (search): ' . $e->getMessage(), [
+                'query' => $query,
+                'limit' => $limit,
+                'offset' => $offset
+            ]);
+            
+            throw $e;  
         }
-
-        return $this->formatSearchResponse($response->json());
     }
 
     public function findById(string $id): ?array
     {
-        $response = Http::get("{$this->baseUrl}/gifs/{$id}", [
-            'api_key' => $this->apiKey
-        ]);
-
-        if (!$response->successful()) {
+        try {
+            if (empty($id)) {
+                throw new \InvalidArgumentException('ID not empty');
+            }
+            
+            $result = $this->giphyAdapter->findById($id);
+              if (!$result) {
             return null;
+        }       
+            return $result;
+            
+        } catch (GiphyApiException $e) {
+            Log::error('unexpected error GIPHY service  (findById): ' . $e->getMessage(), [
+                'id' => $id
+            ]);
+            
+            throw $e;
+            
+        } catch (\InvalidArgumentException $e) {
+
+            Log::warning('Invalid Id: ' . $e->getMessage());
+            throw new GiphyApiException($e->getMessage(), 400, $e);
         }
-
-        return $this->formatSingleGif($response->json());
-    }
-
-    protected function formatSearchResponse(array $data): array
-    {
-        return [
-            'total' => $data['pagination']['total_count'] ?? 0,
-            'count' => $data['pagination']['count'] ?? 0,
-            'offset' => $data['pagination']['offset'] ?? 0,
-            'data' => array_map([$this, 'formatGif'], $data['data'] ?? [])
-        ];
-    }
-
-    protected function formatSingleGif(array $data): array
-    {
-        return $this->formatGif($data['data'] ?? $data);
-    }
-
-    protected function formatGif(array $gif): array
-    {
-        return [
-            'id' => $gif['id'],
-            'title' => $gif['title'],
-            'url' => $gif['url'],
-            'images' => [
-                'original' => $gif['images']['original']['url'] ?? null,
-                'downsized' => $gif['images']['downsized']['url'] ?? null
-            ],
-            'rating' => $gif['rating'] ?? 'g',
-            'user' => $gif['user'] ?? null
-        ];
     }
 }
