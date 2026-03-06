@@ -122,7 +122,7 @@ A pesar de probar con:
 
 No fue posible descargar las imágenes necesarias (`mysql:8.0`, `php:8.3-fpm`, etc.) para levantar los contenedores correctamente.
 
-**Por este motivo, decidí continuar el desarrollo con XAMPP** (PHP 8.3 + MySQL), logrando completar la API con todos los requisitos funcionales.
+*Por este motivo, decidí continuar el desarrollo con XAMPP** (PHP 8.3 + MySQL), logrando completar la API con todos los requisitos funcionales.
 
 ✅ Los archivos de Docker (`Dockerfile`, `docker-compose.yml`) están incluidos en el repositorio y son funcionales.  
 En un entorno sin restricciones de red, deberían funcionar correctamente con solo ejecutar `docker-compose up -d`.
