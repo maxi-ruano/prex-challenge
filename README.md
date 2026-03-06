@@ -57,21 +57,6 @@ app/
 | Preguntar al repositorio cómo verificar y luego decidir | Decirle al repositorio que verifique (`$repository->exists()`) |
 | Consultar el estado de un objeto y tomar decisiones externas | El objeto encapsula su comportamiento y toma decisiones internas |
 
-**Ejemplo concreto:**
-```php
-// ❌ Preguntamos (Ask)
-$existing = Favorite::where('user_id', $userId)->where('gif_id', $gifId)->first();
-if ($existing) { /* decidir */ }
-
-// ✅ Decimos (Tell)
-if ($this->favoriteRepository->exists($userId, $gifId)) {
-    return $this->errorResponse('Ya existe');
-}
-
-
-
-
-
 
 ## 🔧 Instalación
 
@@ -103,7 +88,6 @@ php artisan migrate
 
 # 6. Iniciar servidor
 php artisan serve
-
 
 
 ## 🎥 Video demostrativo
