@@ -8,7 +8,7 @@ use App\Contracts\Repositories\FavoriteRepositoryInterface;
 use App\Contracts\Services\GiphyServiceInterface;
 use App\Repositories\EloquentUserRepository;
 use App\Repositories\EloquentFavoriteRepository;
-use App\Services\GiphyService;
+use App\Infrastructure\Adapters\GiphyApiAdapter;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -16,7 +16,7 @@ class RepositoryServiceProvider extends ServiceProvider
     {
         $this->app->bind(UserRepositoryInterface::class, EloquentUserRepository::class);
         $this->app->bind(FavoriteRepositoryInterface::class, EloquentFavoriteRepository::class);
-        $this->app->bind(GiphyServiceInterface::class, GiphyService::class);
+        $this->app->bind(GiphyServiceInterface::class, GiphyApiAdapter::class);
     }
 
     public function boot(): void

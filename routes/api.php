@@ -7,7 +7,7 @@ use App\Http\Controllers\FavoriteController;
 
 // Rutas públicas
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);  // <--- NUEVA RUTA
+Route::post('/register', [AuthController::class, 'register']);
 
 // Rutas protegidas
 Route::middleware('auth.token')->group(function () {

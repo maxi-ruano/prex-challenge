@@ -68,6 +68,11 @@ if ($this->favoriteRepository->exists($userId, $gifId)) {
     return $this->errorResponse('Ya existe');
 }
 
+
+
+
+
+
 ## 🔧 Instalación
 
 ### 📦 Requisitos previos
@@ -98,3 +103,28 @@ php artisan migrate
 
 # 6. Iniciar servidor
 php artisan serve
+
+
+
+## 🎥 Video demostrativo
+
+Haz clic [aquí](https://drive.google.com/file/d/1cjFpHxgfqtKMSx-jwuRL_dMQb6VkwIkO/view?usp=sharing) para ver el video de la API funcionando con XAMPP.
+
+## 🐳 Nota sobre Docker
+
+Durante el desarrollo, intenté levantar el proyecto con Docker, pero me encontré con **problemas de conectividad** con Docker Hub desde mi red local (bloqueo de ISP / timeout persistente).  
+
+A pesar de probar con:
+- VPN (ProtonVPN)
+- Configuración de mirrors
+- Cambio de DNS
+- Firewall desactivado
+
+No fue posible descargar las imágenes necesarias (`mysql:8.0`, `php:8.3-fpm`, etc.) para levantar los contenedores correctamente.
+
+**Por este motivo, decidí continuar el desarrollo con XAMPP** (PHP 8.3 + MySQL), logrando completar la API con todos los requisitos funcionales.
+
+✅ Los archivos de Docker (`Dockerfile`, `docker-compose.yml`) están incluidos en el repositorio y son funcionales.  
+En un entorno sin restricciones de red, deberían funcionar correctamente con solo ejecutar `docker-compose up -d`.
+
+🎥 En el video se puede ver la API funcionando localmente con XAMPP.

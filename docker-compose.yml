@@ -1,0 +1,52 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: giphy-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - giphy-network
+    environment:
+      - PHP_MEMORY_LIMIT=256M
+
+  nginx:
+    image: nginx:alpine
+    container_name: giphy-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - giphy-network
+    depends_on:
+      - app
+
+  mysql:
+    image: mysql:8.0
+    container_name: giphy-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: giphy_challenge
+      MYSQL_USER: giphy_user
+      MYSQL_PASSWORD: giphy_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - giphy-network
+    command: --default-authentication-plugin=mysql_native_password
+
+networks:
+  giphy-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
